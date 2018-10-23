@@ -1,114 +1,81 @@
-let boardState = [
-  [0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0],
-]
+const todoFormEl = document.querySelector('.todo-form')
+const todoListEl = document.querySelector('.todo-list')
 
-// drawBoard는 상태로부터 화면을 그리는 역할과 책임을 갖고 있는 함수
-function drawBoard() {
-  document.querySelectorAll('.row').forEach((rowEl, rowIndex) => {
-    rowEl.querySelectorAll('.col').forEach((colEl, colIndex) => {
-      if (boardState[rowIndex][colIndex] === 1) {
-        colEl.classList.add('checked')
-      } else {
-        colEl.classList.remove('checked')
-      }
-    })
-  })
+todoFormEl.addEventListener('submit', e => {
+  e.preventDefault()
+  addTodo(e.target.elements.todo.value)
+  // input 안의 내용을 초기화
+  // 1. `.value`에 값을 대입하기
+  // e.target.elements.todo.value = ''
 
-  if (bingo(boardState)) {
-    document.querySelector('.result').textContent = 'BINGO!'
-    document.querySelector('.reset').classList.add('show')
-  } else {
-    document.querySelector('.result').textContent = ''
-    document.querySelector('.reset').classList.remove('show')
-  }
-
-}
-
-
-function bingo(arr) {
-  // 가로줄 확인 (루프)
-  for (let i = 0; i < 5; i++) {
-    // '이제까지 본 것이 전부 x표시가 되어있다'
-    let checked = true
-    for (let j = 0; j < 5; j++) {
-      if (arr[i][j] === 0) {
-        checked = false
-      }
-    }
-    if (checked) {
-      return true
-    }
-  }
-
-  // 세로줄 확인 (루프)
-  for (let i = 0; i < 5; i++) {
-    // '이제까지 본 것이 전부 x표시가 되어있다'
-    let checked = true
-    for (let j = 0; j < 5; j++) {
-      if (arr[j][i] === 0) {
-        checked = false
-      }
-    }
-    if (checked) {
-      return true
-    }
-  }
-
-  {
-    // 대각선 확인 (루프)
-    let checked = true
-    for (let j = 0; j < 5; j++) {
-      if (arr[j][j] === 0) {
-        checked = false
-      }
-    }
-    if (checked) {
-      return true
-    }
-  }
-
-  {
-    // 반대쪽 대각선 확인 (루프)
-    let checked = true
-    for (let j = 0; j < 5; j++) {
-      if (arr[j][4 - j] === 0) {
-        checked = false
-      }
-    }
-    if (checked) {
-      return true
-    }
-  }
-
-  return false
-}
-
-// 한번만 실행되면 되는 코드
-document.querySelectorAll('.row').forEach((rowEl, rowIndex) => {
-  rowEl.querySelectorAll('.col').forEach((colEl, colIndex) => {
-    colEl.addEventListener('click', e => {
-      if (!bingo(boardState)) {
-        boardState[rowIndex][colIndex] = 1
-        drawBoard()
-      }
-    })
-  })
+  // 2. 폼의 reset 메소드 사용하기
+  e.target.reset()
 })
 
-document.querySelector('.reset').addEventListener('click', e => {
-  //alert('as') 얼럿은 뜹니다, 즉 실행은 됩니다 근데 화면 업데이트가 안됩니다
-  boardState = [
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-  ]
-  drawBoard()
-})
+function addTodo(newTodoText) {
+  // li 태그를 만들어서, 내용을 채운 뒤에 문서 안에 삽입하기
+  const todoItemEl = document.createElement('li')
+  // i 태그를 만들어서, 아이콘 사용
+  const todoIconDelEl = document.createElement('i')
+  todoIconDelEl.classList.add('fas', 'fa-trash-alt')
 
-drawBoard()
+  // css 클래스 추가
+  todoItemEl.classList.add('todo-list-item')
+  // fontawesome
+
+  todoItemEl.textContent = newTodoText
+
+  todoListEl.appendChild(todoItemEl)
+
+  // 삭제 버튼을 만들어서 문서 안에 넣기
+  const deleteButtonEl = document.createElement('button')
+  deleteButtonEl.textContent = ''
+
+  todoItemEl.appendChild(deleteButtonEl)
+  deleteButtonEl.appendChild(todoIconDelEl)
+
+  // 삭제 버튼을 클릭했을 때 할일 항목이 삭제되도록 만들기
+  deleteButtonEl.addEventListener('click', e => {
+    todoListEl.removeChild(todoItemEl)
+  })
+
+  // 위로 버튼을 만들어서 문서 안에 넣기
+  const upButtonEl = document.createElement('button')
+  upButtonEl.textContent = ''
+  // i 태그를 만들어서, 아이콘 사용
+  const todoIconUpEl = document.createElement('i')
+  todoIconUpEl.classList.add('fas', 'fa-angle-up')
+
+  todoItemEl.appendChild(upButtonEl)
+  upButtonEl.appendChild(todoIconUpEl)
+
+  upButtonEl.addEventListener('click', e => {
+    // alert('위로 버튼이 클릭되었습니다.')
+    if (todoItemEl.previousElementSibling != null) {
+      todoListEl.insertBefore(todoItemEl, todoItemEl.previousElementSibling)
+    }
+  })
+
+  // 아래로 버튼을 만들어서 문서 안에 넣기
+  const downButtonEl = document.createElement('button')
+  downButtonEl.textContent = ''
+  // i 태그를 만들어서, 아이콘 사용
+  const todoIconDownEl = document.createElement('i')
+  todoIconDownEl.classList.add('fas', 'fa-angle-down')
+
+  todoItemEl.appendChild(downButtonEl)
+  downButtonEl.appendChild(todoIconDownEl)
+
+  downButtonEl.addEventListener('click', e => {
+    if (todoItemEl.nextElementSibling != null) {
+      todoListEl.insertBefore(
+        todoItemEl,
+        todoItemEl.nextElementSibling.nextElementSibling
+      )
+    }
+  })
+}
+
+addTodo('break week homework')
+addTodo('eating pizza')
+
