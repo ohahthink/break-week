@@ -75,11 +75,11 @@ body {
 }
 
 .todo-list-item {
-  margin-top: 10px;
+  margin-bottom: 25px;
 
   button {
     background: transparent;
-    color: silver;
+    color: rgba(0, 0, 0, 0.2);
     border: none;
     float: right;
     font-size: 1.2rem;
